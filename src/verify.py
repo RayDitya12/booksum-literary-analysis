@@ -103,4 +103,5 @@ def _duplication(rows):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=None)
+    args = ap.parse_args()
     main(args.out)
