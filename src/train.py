@@ -30,7 +30,7 @@ def make_preprocess(tok, arm_cfg):
     return preprocess
 
 
-def train(arm, limit=None, epochs=None, out_dir=None, skip_prep=False):
+def train(arm, limit=None, epochs=None, out_dir=None):
     out_dir = out_dir or config.OUT_DIR
     if arm not in config.ARMS:
         raise SystemExit(f"arm '{arm}' not in {list(config.ARMS)}")
@@ -51,8 +51,7 @@ def train(arm, limit=None, epochs=None, out_dir=None, skip_prep=False):
         model.gradient_checkpointing_enable()
         model.config.use_cache = False
 
-    if not skip_prep:
-        ds = ds.map(make_preprocess(tok, arm_cfg), batched=True, remove_columns=ds["train"].column_names, desc="tokenize")
+    ds = ds.map(make_preprocess(tok, arm_cfg), batched=True, remove_columns=ds["train"].column_names, desc="tokenize")
 
     n_epochs = epochs or config.EPOCHS
     steps_per_epoch = -(-len(ds["train"]) // (config.BATCH_PER_DEVICE * config.GRAD_ACCUM))
@@ -115,6 +114,5 @@ if __name__ == "__main__":
     ap.add_argument("--limit", type=int, default=None, help="smoke test with N rows per split")
     ap.add_argument("--epochs", type=float, default=None)
     ap.add_argument("--out", default=None)
-    ap.add_argument("--skip-prep", action="store_true", help="reuse already tokenized dataset on disk")
     args = ap.parse_args()
-    train(args.arm, limit=args.limit, epochs=args.epochs, out_dir=args.out, skip_prep=args.skip_prep)
+    train(args.arm, limit=args.limit, epochs=args.epochs, out_dir=args.out)
