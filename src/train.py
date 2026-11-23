@@ -54,14 +54,16 @@ def train(arm, limit=None, epochs=None, out_dir=None, skip_prep=False):
     if not skip_prep:
         ds = ds.map(make_preprocess(tok, arm_cfg), batched=True, remove_columns=ds["train"].column_names, desc="tokenize")
 
+    n_epochs = epochs or config.EPOCHS
+    steps_per_epoch = -(-len(ds["train"]) // (config.BATCH_PER_DEVICE * config.GRAD_ACCUM))
     args = Seq2SeqTrainingArguments(
         output_dir=model_dir,
         per_device_train_batch_size=config.BATCH_PER_DEVICE,
         per_device_eval_batch_size=config.BATCH_PER_DEVICE,
         gradient_accumulation_steps=config.GRAD_ACCUM,
-        num_train_epochs=epochs or config.EPOCHS,
+        num_train_epochs=n_epochs,
         learning_rate=config.LR,
-        warmup_ratio=config.WARMUP_RATIO,
+        warmup_steps=int(config.WARMUP_RATIO * steps_per_epoch * n_epochs),
         weight_decay=0.05,
         fp16=config.FP16 and torch.cuda.is_available(),
         seed=config.SEED,
