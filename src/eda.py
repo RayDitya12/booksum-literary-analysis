@@ -71,7 +71,7 @@ def recommend(report):
     for arm, data in report.items():
         cfg = config.ARMS[arm]
         cov = data["splits"]["train"]["input_coverage"]
-        fits = [w for w in WINDOWS if cov.get(w, 0) >= 95.0]
+        fits = [w for w in WINDOWS if cov.get(str(w), 0) >= 95.0]
         chosen = cfg["max_src_tokens"]
         smallest = min(fits) if fits else max(WINDOWS)
         print(f"  {arm}: window terkecil dengan >=95% bab utuh = {smallest} token; config sekarang = {chosen}")
