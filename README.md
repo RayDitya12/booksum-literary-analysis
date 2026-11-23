@@ -85,6 +85,38 @@ Model yang tersimpan di `outputs/<nama varian>` dipakai lagi oleh tahap evaluasi
 
 Sel demo akan terus berjalan dan menampilkan URL gradio.live di output sel tersebut.
 
+## Kalau ada perubahan kode
+
+Yang datang dari git hanya `src/` dan notebook. Isi `outputs/` tidak ikut berubah, jadi tabel di
+bawah ini menentukan tahap mana yang perlu dijalankan ulang. Mulai dari tahap paling hulu yang
+tersentuh, lalu lanjut ke hilir.
+
+| Yang berubah | Jalankan ulang |
+|---|---|
+| `demo.py`, `verify.py`, README, notebook | tidak ada |
+| `evaluate.py` | `evaluate.py` untuk varian yang dipakai |
+| `eda.py` | `eda.py`; kalau sarannya mengubah `max_src_tokens`, varian yang terdampak ikut diulang |
+| `excerpt.py`, `HYBRID_MAX_WORDS`, `HYBRID_SENTENCE_BUCKETS` | `data.py`, `eda.py`, lalu hanya `m2_bart_hybrid` |
+| `DROP_NULL_TARGET`, `INCLUDE_AGGREGATE`, `TEXT_SRC`, `TEXT_TARGET` | `data.py`, `eda.py`, ketiga training, ketiga evaluasi |
+| `model`, `tokenizer`, `max_src_tokens`, `max_tgt_tokens` satu varian | training dan evaluasi varian itu saja |
+| `train.py`, `LR`, `EPOCHS`, `BATCH_PER_DEVICE`, `GRAD_ACCUM`, `SEED`, `FP16`, `GRADIENT_CHECKPOINTING` | ketiga training dan ketiga evaluasi |
+| naik major `transformers` | ketiga training dan ketiga evaluasi, karena perilaku tokenizer ikut berubah |
+| naik major `datasets` | `data.py` lebih dulu, karena format simpanan `outputs/dataset` bisa tidak terbaca |
+
+Dua hal yang tidak menimbulkan error kalau dilewati.
+
+Perubahan pada `excerpt.py` tidak mengubah `chapter_selected` yang sudah tersimpan di
+`outputs/dataset`. Training tetap jalan dan memakai excerpt lama tanpa peringatan, jadi `data.py`
+selalu ikut dijalankan kalau seleksi excerptnya berubah.
+
+`leaderboard.jsonl` ditambahkan terus dan tidak pernah ditimpa, sementara barisnya tidak menyimpan
+waktu atau identitas kode. Sebelum evaluasi ulang sesudah ada perubahan kode, hapus dulu
+`outputs/leaderboard.jsonl` supaya tabelnya tidak mencampur hasil lama dan hasil baru. Salinan lama
+sudah ada di Drive, jadi barisnya tidak hilang sungguhan.
+
+`verify.py` hanya membaca dan pemakaiannya cuma beberapa menit, jadi tidak masalah menjalankannya
+lebih dulu untuk memastikan dataset sumbernya masih sama seperti waktu kami mengukur.
+
 ## Menjalankan sebagian di laptop
 
 `verify.py`, `data.py`, `excerpt.py`, dan `eda.py` hanya butuh CPU dan RAM biasa, jadi bisa dijalankan
