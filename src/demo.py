@@ -11,6 +11,9 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 class Analyzer:
     def __init__(self, model_dir):
+        if not os.path.exists(os.path.join(model_dir, "config.json")):
+            raise SystemExit(f"{model_dir} tidak berisi model. Jalankan train.py lebih dulu, atau pulihkan "
+                             "outputs dari Drive lewat cell pemulihan di notebook.")
         self.tok = AutoTokenizer.from_pretrained(model_dir)
         self.model = AutoModelForSeq2SeqLM.from_pretrained(model_dir)
         self.model.to("cuda" if torch.cuda.is_available() else "cpu")

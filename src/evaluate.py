@@ -56,6 +56,9 @@ def evaluate(arm, limit=None, decoding="both", out_dir=None, batch=2):
         ds = ds.select(range(min(limit, len(ds))))
     print(f"[eval] {arm_cfg['label']} on {len(ds)} test rows")
 
+    if not os.path.exists(os.path.join(model_dir, "config.json")):
+        raise SystemExit(f"{model_dir} tidak berisi model. Jalankan train.py --arm {arm} lebih dulu, "
+                         "atau pulihkan outputs dari Drive bila modelnya sudah pernah dilatih.")
     tok = AutoTokenizer.from_pretrained(model_dir)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_dir)
     model.to("cuda" if torch.cuda.is_available() else "cpu")
