@@ -11,6 +11,7 @@ topik tidak tumpang tindih.
 ## Isi folder
 
 ```
+booksum-colab.ipynb urutan pemanggilan skrip untuk dijalankan di Colab
 src/config.py      semua parameter eksperimen dikumpulkan di sini
 src/verify.py      cek kondisi dataset: nilai null, duplikasi bab, tumpang tindih antar split
 src/data.py        memfilter baris dan menambah kolom chapter_selected
@@ -23,6 +24,11 @@ outputs/           hasil antara dan hasil akhir, dibuat otomatis
 ```
 
 ## Menjalankan di Google Colab
+
+Jalan pintasnya: buka `booksum-colab.ipynb` lewat
+[Colab](https://colab.research.google.com/github/RayDitya12/booksum-literary-analysis/blob/main/booksum-colab.ipynb).
+Notebook itu tidak berisi logika, hanya urutan pemanggilan skrip di `src/`, dan runtime GPU-nya sudah
+dipasang lewat metadata notebook. Uraiannya di bawah, untuk kalau kamu lebih suka notebook sendiri.
 
 Pilih Runtime -> Change runtime type -> T4 GPU sebelum menjalankan training.
 
