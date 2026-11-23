@@ -1,5 +1,11 @@
-datasets>=2.18
-transformers>=4.41
+# Versi di bawah ini yang dipakai saat verify.py, data.py, dan eda.py lulus pemeriksaan.
+# transformers sengaja dibatasi major-nya: 5.x menghapus warmup_ratio dan slow tokenizer,
+# jadi kode di src/ ditulis mengikuti perilaku itu.
+datasets>=5.2,<6
+transformers>=5.24,<6
+
+# torch dan accelerate tidak dipin: Colab sudah membawa build CUDA sendiri, dan memaksa versi
+# tertentu di sana memicu pemasangan ulang torch yang besar.
 accelerate
 torch
 rouge-score
